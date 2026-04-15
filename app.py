@@ -6,6 +6,36 @@ from simple_salesforce import Salesforce
 import os
 
 st.set_page_config(page_title="Enterprise Pursuit App", layout="wide", page_icon="🚀")
+# st.set_page_config(page_title="Enterprise Pursuit App", layout="wide", page_icon="🚀")
+
+# ✅ SESSION STATE INITIALIZATION (ADD THIS BLOCK HERE)
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+if "portfolios" not in st.session_state:
+    st.session_state.portfolios = {}
+
+if "current" not in st.session_state:
+    st.session_state.current = None
+
+if "temp_data" not in st.session_state:
+    st.session_state.temp_data = {}
+
+# ADMIN CONFIG (adjustable)
+if 'config' not in st.session_state:
+    st.session_state.config = {
+        "strategic_fit_factors": {
+            "Geographic alignment": 25,
+            "Revenue density": 25,
+            "Brand leverage": 25,
+            "Multi-site scalability": 25
+        },
+        "value_of_services": {
+            "landscape_base_pct": 48,
+            "snow_base_pct": 52,
+            "enhancement_uplift_pct": 8
+        }
+    }
 
 # ADMIN CONFIG (adjustable)
 if 'config' not in st.session_state:
@@ -151,10 +181,11 @@ elif page == "📂 My Saved Portfolios":
                 if st.button("Delete", key=f"del_{name}"): del st.session_state.portfolios[name]; st.rerun()
 
 # EDIT & EXPORT
-if 'current' in st.session_state:
-    p = st.session_state.current
-    st.divider()
-    st.title(f"Editing: {p['company']}")
+p = st.session_state.get("current")
+
+if not p:
+    st.info("No portfolio selected. Generate or load one to begin.")
+    st.stop()
 
     tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
         "1️⃣ EOS Gate", "2️⃣ Financial Model", "3️⃣ Property Breakouts",
